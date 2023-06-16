@@ -1,7 +1,7 @@
 const request = require('supertest');
 const appFactory = require('../appFactory');
 
-describe("Makeing Orders", ()=>{
+describe("Orders", ()=>{
 
     let mockDBConnectionMgr;
     let mockWeatherApiMgr;
@@ -10,7 +10,8 @@ describe("Makeing Orders", ()=>{
 
     beforeEach(()=>{
         mockDBConnectionMgr = {
-            createOrder: jest.fn()
+            createOrder: jest.fn(),
+            getAllOrders: jest.fn()
         };
 
         mockOrder01 = {
@@ -68,4 +69,28 @@ describe("Makeing Orders", ()=>{
             message: 'Database operation failed',
         });
     })
-})
+
+    it('should respond with 200', async()=>{
+        const sampleData = [
+            {
+                id:1,
+                firstName:"BrotherMan",
+                lastName:"FromTheFifthFloor",
+                order:"Smache",
+                paid:false
+            }
+        ];
+        mockDBConnectionMgr.getAllOrders.mockResolvedValue(sampleData);
+        const response = await request(testApp)
+            .get("/orders")
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+            status: 'success',
+            data:{
+                orders:sampleData
+            }
+        })
+    })
+});
+

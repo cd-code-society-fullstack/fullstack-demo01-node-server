@@ -31,6 +31,24 @@ const appFactory = (dbConnectionMgr, weatherApiMgr) => {
         }
     });
 
+    app.get("/orders", async(req, res)=> {
+        try{
+            const orders = await dbConnectionMgr.getAllOrders();
+            res.status(200).send({
+                status: 'success',
+                data:{
+                    orders
+                }
+            })
+        }catch(err){
+            console.log(err)
+            res.status(500).send({
+                status: 'error',
+                message: 'Database operation failed'
+            });
+        }
+    })
+
     return app;
 }
 
